@@ -7,7 +7,7 @@ class WebDriver(ABC):
         pass
     
     @abstractmethod
-    def set_options(self) -> str:
+    def get_options(self) -> str:
         pass
 
     @abstractmethod
