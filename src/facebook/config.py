@@ -3,6 +3,7 @@ import os
 
 load_dotenv()
 
+
 def get_proxy_link() -> str:
     proxy_ulr: str | None = os.getenv("PROXY_URL")
     if proxy_ulr:
