@@ -1,4 +1,5 @@
 from selenium.webdriver.common.proxy import Proxy
+from selenium.webdriver.common.options import ArgOptions
 from abc import ABC, abstractmethod
 
 class FBWebDriver(ABC):
@@ -7,7 +8,7 @@ class FBWebDriver(ABC):
         pass
     
     @abstractmethod
-    def get_options(self) -> str:
+    def get_options(self) -> ArgOptions:
         pass
 
     @abstractmethod
