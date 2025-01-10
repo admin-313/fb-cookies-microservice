@@ -1,7 +1,7 @@
 from selenium.webdriver.common.proxy import Proxy
 from abc import ABC, abstractmethod
 
-class WebDriver(ABC):
+class FBWebDriver(ABC):
     @abstractmethod
     def get_facebook_data(self) -> str:
         pass
