@@ -17,7 +17,7 @@ class GeckodriverFBWebDriverImpl(FBWebDriver):
                 seleniumwire_options=options_seleniumwire, options=options_selenium
             )
             self._firefox_driver.get("https://api.ipify.org?format=json")
-            await asyncio.sleep(60)
+            await asyncio.sleep(6)
         except Exception as e:
             print(e)
         finally:
@@ -42,7 +42,7 @@ class GeckodriverFBWebDriverImpl(FBWebDriver):
 
     def get_seleniumwire_options(self) -> dict[str, dict[str, str | None ] | bool]:
         proxy_options = self.get_socks5_proxy_config()
-        ssl_options = {"verify_ssl": False, "suppress_connection_errors": True}
+        ssl_options = {"verify_ssl": False, "suppress_connection_errors": True, "accept_untrusted_certs ": True}
 
         return proxy_options | ssl_options
 
