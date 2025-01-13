@@ -8,7 +8,11 @@ class FBWebDriver(ABC):
         pass
 
     @abstractmethod
-    def get_options(self) -> ArgOptions:
+    def get_selenium_options(self) -> ArgOptions:
+        pass
+
+    @abstractmethod
+    def get_seleniumwire_options(self) -> ArgOptions:
         pass
 
     @abstractmethod
