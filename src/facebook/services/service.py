@@ -5,7 +5,7 @@ from abc import ABC, abstractmethod
 
 class FBWebDriver(ABC):
     @abstractmethod
-    def run_facebook_parser(self) -> str:
+    async def run_facebook_parser(self) -> str:
         pass
 
     @abstractmethod
