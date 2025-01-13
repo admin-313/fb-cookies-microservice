@@ -11,7 +11,7 @@ class GeckodriverFBWebDriverImpl(FBWebDriver):
     async def run_facebook_parser(self) -> str:
         try:
             options: webdriver.FirefoxOptions = self.get_options()
-            self._firefox_driver = webdriver.Firefox(options=options)
+            self._firefox_driver = webdriver.Firefox(seleniumwire_options=options)
             self._firefox_driver.get("https://am.i.mullvad.net/")
             await asyncio.sleep(60)
         finally:
