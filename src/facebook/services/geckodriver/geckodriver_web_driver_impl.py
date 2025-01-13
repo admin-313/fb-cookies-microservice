@@ -1,8 +1,8 @@
 import asyncio
-from selenium import webdriver
-from selenium.webdriver.common.proxy import Proxy, ProxyType
+import os
 from facebook.services.fb_web_driver import FBWebDriver
-from facebook.config import FakeUserAgentConfig, ProxyConfig
+from facebook.config import FakeUserAgentConfig
+from seleniumwire import webdriver  # type: ignore
 
 
 class GeckodriverFBWebDriverImpl(FBWebDriver):
@@ -21,7 +21,7 @@ class GeckodriverFBWebDriverImpl(FBWebDriver):
         return ""
 
     def get_options(self) -> webdriver.FirefoxOptions:
-        proxy_config: Proxy = self.get_proxy_config()
+        proxy_config: dict[str, dict[str, str | None]] = self.get_socks5_proxy_config()
         user_agent: str = self.get_user_agent()
 
         gecko_options: webdriver.FirefoxOptions = webdriver.FirefoxOptions()
@@ -35,19 +35,12 @@ class GeckodriverFBWebDriverImpl(FBWebDriver):
     def get_user_agent(self) -> str:
         return FakeUserAgentConfig.get_fake_ua_firefox()
 
-    def get_proxy_config(self) -> Proxy:
-        # I'm writing this comment here to tell future developer who stumbles upon this that
-        # Neither Chromium nor Geckodriver support SOCKSv5 Private(auth) proxies.
-        # We mad because of this yet we have no other options but to use https at this point.
-        # For some reason browser engines devs don't want to implements this
-        # since on the github of those projects it's already been a while since the
-        # pull requests with private socksv5 additions have been proposed.
-        # I kindly ask you to keep this comment here so noone will spend hours of
-        # his time figuring out how to migrate to socksv5 from http. Thank you for
-        # paying your attention to this project and have a great rest of your day
-        proxy_link: str = ProxyConfig.get_proxy_link()
-        proxy_config: Proxy = Proxy(
-            {"proxyType": ProxyType.MANUAL, "httpProxy": proxy_link}  # type: ignore
-        )
-
-        return proxy_config
+    def get_socks5_proxy_config(self) -> dict[str, dict[str, str | None]]:
+        socks_proxy: str | None= os.getenv("PROXY_URL")
+        return {
+            "proxy": {
+                "http": socks_proxy,
+                "https": socks_proxy,
+                "no_proxy": "localhost,ENDPOINT",
+            }
+        }

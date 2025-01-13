@@ -17,5 +17,5 @@ class FBWebDriver(ABC):
         pass
 
     @abstractmethod
-    def get_proxy_config(self) -> Proxy:
+    def get_socks5_proxy_config(self) -> dict[str, dict[str, str | None]]:
         pass
