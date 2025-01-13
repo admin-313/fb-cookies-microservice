@@ -1,4 +1,3 @@
-from selenium.webdriver.common.proxy import Proxy
 from selenium.webdriver.common.options import ArgOptions
 from abc import ABC, abstractmethod
 
