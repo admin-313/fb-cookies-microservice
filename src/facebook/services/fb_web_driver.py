@@ -16,7 +16,7 @@ class FBWebDriver(ABC):
         pass
 
     @abstractmethod
-    def get_user_agent(self) -> str:
+    def get_random_user_agent(self) -> str:
         pass
 
     @abstractmethod
