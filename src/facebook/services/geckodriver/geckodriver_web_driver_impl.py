@@ -12,19 +12,17 @@ class GeckodriverFBWebDriverImpl(FBWebDriver):
     async def run_facebook_parser(self) -> str:
         try:
             options_selenium: webdriver.FirefoxOptions = self.get_selenium_options()
-            options_seleniumwire: webdriver.FirefoxOptions = (
+            options_seleniumwire: dict[str, dict[str, str | None]] = (
                 self.get_seleniumwire_options()
             )
             self._firefox_driver = webdriver.Firefox(
                 seleniumwire_options=options_seleniumwire, options=options_selenium
             )
 
-            self._firefox_driver.get("https://am.i.mullvad.net/")
+            self._firefox_driver.get("https://api.ipify.org?format=json")
             await asyncio.sleep(60)
-        finally:
-            if self._firefox_driver:
-                self._firefox_driver.quit()
-
+        except Exception as e:
+            print(e)
         return ""
 
     def get_selenium_options(self) -> webdriver.FirefoxOptions:
@@ -37,11 +35,8 @@ class GeckodriverFBWebDriverImpl(FBWebDriver):
 
         return gecko_options
 
-    def get_seleniumwire_options(self) -> webdriver.FirefoxOptions:
-        gecko_options: webdriver.FirefoxOptions = webdriver.FirefoxOptions()
-        proxy_config: dict[str, dict[str, str | None]] = self.get_socks5_proxy_config()
-        gecko_options.proxy = proxy_config
-        return gecko_options
+    def get_seleniumwire_options(self) -> dict[str, dict[str, str | None]]:
+        return self.get_socks5_proxy_config()
 
     def get_user_agent(self) -> str:
         return FakeUserAgentConfig.get_fake_ua_firefox()
