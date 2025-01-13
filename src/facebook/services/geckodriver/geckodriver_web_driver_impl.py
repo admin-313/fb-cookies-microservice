@@ -33,7 +33,7 @@ class GeckodriverFBWebDriverImpl(FBWebDriver):
         return gecko_options
 
     def get_user_agent(self) -> str:
-        return FakeUserAgentConfig.get_fake_ua()
+        return FakeUserAgentConfig.get_fake_ua_firefox()
 
     def get_proxy_config(self) -> Proxy:
         # I'm writing this comment here to tell future developer who stumbles upon this that

@@ -18,6 +18,6 @@ class ProxyConfig:
 
 class FakeUserAgentConfig:
     @staticmethod
-    def get_fake_ua() -> str:
+    def get_fake_ua_firefox() -> str:
         ua = UserAgent(browsers="Firefox", os="Windows")
         return ua.random
