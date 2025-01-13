@@ -1,7 +1,7 @@
 import asyncio
 from selenium import webdriver
 from selenium.webdriver.common.proxy import Proxy, ProxyType
-from facebook.services.service import FBWebDriver
+from facebook.services.fb_web_driver import FBWebDriver
 from facebook.config import FakeUserAgentConfig, ProxyConfig
 
 
