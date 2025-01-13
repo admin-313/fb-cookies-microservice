@@ -12,7 +12,7 @@ class FBWebDriver(ABC):
         pass
 
     @abstractmethod
-    def get_seleniumwire_options(self) -> dict[str, dict[str, str | None]]:
+    def get_seleniumwire_options(self) -> dict[str, dict[str, str | None ] | bool]:
         pass
 
     @abstractmethod
