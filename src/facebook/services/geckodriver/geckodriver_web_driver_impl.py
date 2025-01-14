@@ -14,7 +14,7 @@ class GeckodriverFBWebDriverImpl(FBWebDriver):
         try:
             options: dict[
                 str, webdriver.FirefoxOptions | dict[str, dict[str, str | None] | bool]
-            ] = self._get_webdriver_options()
+            ] = self._get_all_options()
             self._firefox_driver = webdriver.Firefox(**options)
             self._firefox_driver.get("https://api.ipify.org?format=json")
             await asyncio.sleep(6)
@@ -27,7 +27,7 @@ class GeckodriverFBWebDriverImpl(FBWebDriver):
         else:
             raise FBWebdriverCouldNotParseToken("Could not parse the token!")
 
-    def _get_webdriver_options(
+    def _get_all_options(
         self,
     ) -> dict[str, webdriver.FirefoxOptions | dict[str, dict[str, str | None] | bool]]:
         return {
