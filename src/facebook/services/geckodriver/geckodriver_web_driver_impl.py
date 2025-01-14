@@ -1,13 +1,16 @@
 import asyncio
-from facebook.services.fb_web_driver import FBWebDriver
-from facebook.config import FakeUserAgentConfig, ProxyConfig
 from seleniumwire import webdriver  # type: ignore
+from facebook.services.fb_web_driver import FBWebDriver
+from facebook.exceptions import FBWebdriverCouldNotParseToken
+from facebook.config import FakeUserAgentConfig, ProxyConfig
 
 
 class GeckodriverFBWebDriverImpl(FBWebDriver):
     _firefox_driver: webdriver.Firefox | None = None
 
-    async def run_facebook_parser(self) -> str:
+    async def run_facebook_parser(self) -> str :
+        parsed_result: list[str] | None = None
+
         try:
             options: dict[str, webdriver.FirefoxOptions | dict[str, dict[str, str | None] | bool]] = self._get_webdriver_options()
             self._firefox_driver = webdriver.Firefox(**options)
@@ -17,8 +20,10 @@ class GeckodriverFBWebDriverImpl(FBWebDriver):
         finally:
             if self._firefox_driver:
                 self._firefox_driver.quit()
-
-        return ""
+        if parsed_result:
+            return parsed_result
+        else:
+            raise FBWebdriverCouldNotParseToken("Could not parse the token!")
 
     def _get_webdriver_options(
         self,
