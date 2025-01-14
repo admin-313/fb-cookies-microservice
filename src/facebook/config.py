@@ -1,4 +1,5 @@
 import os
+from pydantic import BaseModel, ConfigDict
 from fake_useragent import UserAgent
 
 
@@ -20,3 +21,11 @@ class FakeUserAgentConfig:
     def get_fake_ua_firefox() -> str:
         ua = UserAgent(browsers="Firefox", os="Windows")
         return ua.random
+
+
+class JSONFBWebdriverConfig(BaseModel):
+    model_config = ConfigDict(strict=True)
+
+    proxy: str
+    user_agent: str
+    proxy_link: str
