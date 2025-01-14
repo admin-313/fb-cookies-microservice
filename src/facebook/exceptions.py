@@ -6,3 +6,6 @@ class FBWebdriverCouldNotLoginToFb(FBWebdriverException):
 
 class FBWebdriverHasNotBeenInstanciatedException(FBWebdriverException):
     pass
+
+class FBWebdriverCouldNotParseToken(FBWebdriverException):
+    pass
