@@ -8,15 +8,17 @@ from facebook.config import FakeUserAgentConfig, ProxyConfig
 class GeckodriverFBWebDriverImpl(FBWebDriver):
     _firefox_driver: webdriver.Firefox | None = None
 
-    async def run_facebook_parser(self) -> str :
+    async def run_facebook_parser(self) -> str:
         parsed_result: list[str] | None = None
 
         try:
-            options: dict[str, webdriver.FirefoxOptions | dict[str, dict[str, str | None] | bool]] = self._get_webdriver_options()
+            options: dict[
+                str, webdriver.FirefoxOptions | dict[str, dict[str, str | None] | bool]
+            ] = self._get_webdriver_options()
             self._firefox_driver = webdriver.Firefox(**options)
             self._firefox_driver.get("https://api.ipify.org?format=json")
             await asyncio.sleep(6)
-            
+
         finally:
             if self._firefox_driver:
                 self._firefox_driver.quit()
