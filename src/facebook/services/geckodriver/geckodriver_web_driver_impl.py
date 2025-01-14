@@ -7,7 +7,8 @@ from facebook.config import FakeUserAgentConfig, ProxyConfig
 
 class GeckodriverFBWebDriverImpl(FBWebDriver):
     _firefox_driver: webdriver.Firefox | None = None
-
+    _json_config: dict[str, str] | None = None
+    
     async def run_facebook_parser(self) -> str:
         parsed_result: list[str] | None = None
 
