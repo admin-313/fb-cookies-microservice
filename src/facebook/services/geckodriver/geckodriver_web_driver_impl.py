@@ -9,7 +9,7 @@ class GeckodriverFBWebDriverImpl(FBWebDriver):
 
     async def run_facebook_parser(self) -> str:
         try:
-            options: dict[str, webdriver.FirefoxOptions | dict[str, dict[str, str | None] | bool]] = self.get_webdriver_options()
+            options: dict[str, webdriver.FirefoxOptions | dict[str, dict[str, str | None] | bool]] = self._get_webdriver_options()
             self._firefox_driver = webdriver.Firefox(**options)
             self._firefox_driver.get("https://api.ipify.org?format=json")
             await asyncio.sleep(6)
@@ -20,16 +20,16 @@ class GeckodriverFBWebDriverImpl(FBWebDriver):
 
         return ""
 
-    def get_webdriver_options(
+    def _get_webdriver_options(
         self,
     ) -> dict[str, webdriver.FirefoxOptions | dict[str, dict[str, str | None] | bool]]:
         return {
-            "seleniumwire_options": self.get_seleniumwire_options(),
-            "options": self.get_selenium_options(),
+            "seleniumwire_options": self._get_seleniumwire_options(),
+            "options": self._get_selenium_options(),
         }
 
-    def get_selenium_options(self) -> webdriver.FirefoxOptions:
-        user_agent: str = self.get_random_user_agent()
+    def _get_selenium_options(self) -> webdriver.FirefoxOptions:
+        user_agent: str = self._get_random_user_agent()
 
         gecko_options: webdriver.FirefoxOptions = webdriver.FirefoxOptions()
         gecko_options.set_preference(
@@ -42,8 +42,8 @@ class GeckodriverFBWebDriverImpl(FBWebDriver):
 
         return gecko_options
 
-    def get_seleniumwire_options(self) -> dict[str, dict[str, str | None] | bool]:
-        proxy_options = self.get_socks5_proxy_config()
+    def _get_seleniumwire_options(self) -> dict[str, dict[str, str | None] | bool]:
+        proxy_options = self._get_socks5_proxy_config()
         ssl_options = {
             "verify_ssl": False,
             "suppress_connection_errors": True,
@@ -52,8 +52,8 @@ class GeckodriverFBWebDriverImpl(FBWebDriver):
 
         return proxy_options | ssl_options
 
-    def get_random_user_agent(self) -> str:
+    def _get_random_user_agent(self) -> str:
         return FakeUserAgentConfig.get_fake_ua_firefox()
 
-    def get_socks5_proxy_config(self) -> dict[str, dict[str, str | None]]:
+    def _get_socks5_proxy_config(self) -> dict[str, dict[str, str | None]]:
         return ProxyConfig.get_socks5_proxy_config()
