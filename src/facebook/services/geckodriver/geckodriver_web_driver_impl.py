@@ -1,6 +1,5 @@
 import asyncio
 from facebook.services.fb_web_driver import FBWebDriver
-from facebook.exceptions import FBWebdriverHasNotBeenInstanciatedException
 from facebook.config import FakeUserAgentConfig, ProxyConfig
 from seleniumwire import webdriver  # type: ignore
 
@@ -10,30 +9,24 @@ class GeckodriverFBWebDriverImpl(FBWebDriver):
 
     async def run_facebook_parser(self) -> str:
         try:
-            self._set_options()
-
-            if isinstance(self._firefox_driver, webdriver.Firefox):
-                self._firefox_driver.get("https://api.ipify.org?format=json")
-                await asyncio.sleep(6)
-            else:
-                raise FBWebdriverHasNotBeenInstanciatedException(
-                    "The driver failed to be instanciated"
-                )
-
+            options: dict[str, webdriver.FirefoxOptions | dict[str, dict[str, str | None] | bool]] = self.get_webdriver_options()
+            self._firefox_driver = webdriver.Firefox(**options)
+            self._firefox_driver.get("https://api.ipify.org?format=json")
+            await asyncio.sleep(6)
+            
         finally:
             if self._firefox_driver:
                 self._firefox_driver.quit()
 
         return ""
 
-    def _set_options(self) -> None:
-        options_selenium: webdriver.FirefoxOptions = self.get_selenium_options()
-        options_seleniumwire: dict[str, dict[str, str | None] | bool] = (
-            self.get_seleniumwire_options()
-        )
-        self._firefox_driver = webdriver.Firefox(
-            seleniumwire_options=options_seleniumwire, options=options_selenium
-        )
+    def get_webdriver_options(
+        self,
+    ) -> dict[str, webdriver.FirefoxOptions | dict[str, dict[str, str | None] | bool]]:
+        return {
+            "seleniumwire_options": self.get_seleniumwire_options(),
+            "options": self.get_selenium_options(),
+        }
 
     def get_selenium_options(self) -> webdriver.FirefoxOptions:
         user_agent: str = self.get_random_user_agent()
