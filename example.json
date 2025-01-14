@@ -1,0 +1,5 @@
+{
+    "proxy": "urlToYourProxy",
+    "user_agent": "preferedUserAgent",
+    "cookie": "yourFacebookCookie"
+}
