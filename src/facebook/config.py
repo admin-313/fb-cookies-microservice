@@ -28,4 +28,4 @@ class JSONFBWebdriverConfig(BaseModel):
 
     proxy: str
     user_agent: str
-    proxy_link: str
+    cookie: str
