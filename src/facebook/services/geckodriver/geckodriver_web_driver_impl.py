@@ -26,6 +26,9 @@ class GeckodriverFBWebDriverImpl(FBWebDriver):
 
         return ""
 
+    def parse_token_from_html(self, html: str) -> str:
+        pass
+    
     def get_selenium_options(self) -> webdriver.FirefoxOptions:
         user_agent: str = self.get_random_user_agent()
 

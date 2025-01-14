@@ -22,3 +22,7 @@ class FBWebDriver(ABC):
     @abstractmethod
     def get_socks5_proxy_config(self) -> dict[str, dict[str, str | None]]:
         pass
+    
+    @abstractmethod
+    def parse_token_from_html(self, html: str) -> str:
+        pass
