@@ -5,7 +5,7 @@ from pydantic import ValidationError
 from facebook.schemas import JSONFBWebdriverConfig
 from facebook.exceptions import FBWebdriverInvalidConfigProvided
 
-JSON_CONFIG: str = "../config.json"
+JSON_CONFIG_PATH: str = "../config.json"
 
 
 class ProxyConfig:
@@ -31,7 +31,7 @@ class GetJSONConfig:
     @staticmethod
     def get_json_config() -> dict[str, str]:
         content: dict[Any, Any]
-        with open(JSON_CONFIG, "r") as json_file:
+        with open(JSON_CONFIG_PATH, "r") as json_file:
             content = json.load(json_file)
 
         try:
