@@ -5,3 +5,4 @@ class FacebookToken(BaseModel):
     model_config = ConfigDict(strict=True)
 
     token: str
+    cookie: str
