@@ -5,7 +5,7 @@ from facebook.exceptions import (
     FBWebdriverCouldNotParseToken,
     FBWebdriverHasNotBeenInstanciatedException,
 )
-from facebook.config import FakeUserAgentConfig, ProxyConfig
+from facebook.config import FakeUserAgentConfig, GetJSONConfig, ProxyConfig
 
 
 class GeckodriverFBWebDriverImpl(FBWebDriver):
@@ -16,6 +16,7 @@ class GeckodriverFBWebDriverImpl(FBWebDriver):
         parsed_result: list[str] | None = None
 
         try:
+            self._load_json_config()
             options: dict[
                 str, webdriver.FirefoxOptions | dict[str, dict[str, str | None] | bool]
             ] = self.get_webdriver_options()
@@ -39,8 +40,12 @@ class GeckodriverFBWebDriverImpl(FBWebDriver):
             "options": self._get_selenium_options(),
         }
 
+    def _load_json_config(self) -> dict[str, str]:
+        self._json_config = GetJSONConfig.get_json_config()
+        return self._json_config
+
     def _get_selenium_options(self) -> webdriver.FirefoxOptions:
-        user_agent: str = self._get_random_user_agent()
+        user_agent: str = self._get_user_agent()
 
         gecko_options: webdriver.FirefoxOptions = webdriver.FirefoxOptions()
         gecko_options.set_preference(
@@ -78,8 +83,19 @@ class GeckodriverFBWebDriverImpl(FBWebDriver):
 
         return proxy_options | ssl_options
 
-    def _get_random_user_agent(self) -> str:
-        return FakeUserAgentConfig.get_fake_ua_firefox()
+    def _get_user_agent(self, is_random: bool = False) -> str:
+        """returns user agent
+
+        Args:
+            is_random (bool, optional): Is true uses random user agent. Defaults to False.
+
+        Returns:
+            str: User agent
+        """
+        if is_random:
+            return FakeUserAgentConfig.get_fake_ua_firefox()
+        else:
+            pass
 
     def _get_socks5_proxy_config(self) -> dict[str, dict[str, str | None]]:
         return ProxyConfig.get_socks5_proxy_config()
