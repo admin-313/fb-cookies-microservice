@@ -9,3 +9,6 @@ class FBWebdriverHasNotBeenInstanciatedException(FBWebdriverException):
 
 class FBWebdriverCouldNotParseToken(FBWebdriverException):
     pass
+
+class FBWebdriverInvalidConfigProvided(FBWebdriverException):
+    pass
