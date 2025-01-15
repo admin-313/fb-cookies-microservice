@@ -115,4 +115,4 @@ class GeckodriverFBWebDriverImpl(FBWebDriver):
             return FakeUserAgentConfig.get_fake_ua_firefox()
 
     def _get_socks5_proxy_config(self) -> dict[str, dict[str, str | None]]:
-        return ProxyConfig.get_socks5_proxy_config()
+        return ProxyConfig.get_proxy_config()

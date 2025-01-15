@@ -1,4 +1,3 @@
-import os
 import json
 from typing import Any
 from fake_useragent import UserAgent
@@ -11,12 +10,11 @@ JSON_CONFIG: str = "../config.json"
 
 class ProxyConfig:
     @staticmethod
-    def get_socks5_proxy_config() -> dict[str, dict[str, str | None]]:
-        socks_proxy: str | None = os.getenv("PROXY_URL")
+    def get_proxy_config(proxy_url: str) -> dict[str, dict[str, str | None]]:
         return {
             "proxy": {
-                "http": socks_proxy,
-                "https": socks_proxy,
+                "http": proxy_url,
+                "https": proxy_url,
                 "no_proxy": "localhost,ENDPOINT",
             }
         }
