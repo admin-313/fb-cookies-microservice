@@ -4,3 +4,16 @@
 
 ## Deploy Strategy:
 Rename ```example.json``` to ```config.json```, open it and enter your data
+
+TODO List:
+- [ ] Add Token and Cookie parsers
+- [ ] Add robust Exception handling
+- [ ] Add logging
+- [ ] Write some tests
+- [ ] Documentation
+  - [ ] API endpoints
+  - [ ] Configuration guide
+  - [ ] Deployment instructions
+- [ ] Security Improvement
+  - [ ] Login by creds
+  - [ ] Limit the maximum amount of concurrent connections
