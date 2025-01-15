@@ -6,6 +6,7 @@ from facebook.exceptions import (
     FBWebdriverHasNotBeenInstanciatedException,
 )
 from facebook.config import FakeUserAgentConfig, GetJSONConfig, ProxyConfig
+from facebook.utils import CookieStringParser
 
 
 class GeckodriverFBWebDriverImpl(FBWebDriver):
@@ -17,11 +18,14 @@ class GeckodriverFBWebDriverImpl(FBWebDriver):
 
         try:
             self._load_json_config()
+
             options: dict[
                 str, webdriver.FirefoxOptions | dict[str, dict[str, str | None] | bool]
             ] = self.get_webdriver_options()
             self._firefox_driver = webdriver.Firefox(**options)
+
             self._firefox_driver.get("https://api.ipify.org?format=json")
+            self._set_cookies_from_config()
             await asyncio.sleep(6)
 
         finally:
@@ -59,7 +63,14 @@ class GeckodriverFBWebDriverImpl(FBWebDriver):
         return gecko_options
 
     def _get_cookies(self) -> dict[str, str]:
-        pass
+        if self._json_config:
+            cookie_str: str = self._json_config["cookie"]
+            cookies_list: dict[str, str] = CookieStringParser.parse_cookie_string(cookie_str=cookie_str)
+
+            return cookies_list
+        else:
+            return {}
+
 
     def _set_cookies_from_config(self) -> None:
         if not self._firefox_driver:
@@ -68,10 +79,11 @@ class GeckodriverFBWebDriverImpl(FBWebDriver):
             )
         else:
             cookies: dict[str, str] = self._get_cookies()
-            for k, v in cookies:
-                # I ignore pylance here because selenium wire did not provide type hints to this method.
-                # It is supposed to only accept str values tho so method is not expected to fail here.
-                self._firefox_driver.add_cookie({"name": k, "value": v})  # type: ignore
+            if cookies:
+                for k, v in cookies:
+                    # I ignore pylance here because selenium wire did not provide type hints to this method.
+                    # It is supposed to only accept str values tho so method is not expected to fail here.
+                    self._firefox_driver.add_cookie({"name": k, "value": v})  # type: ignore
 
     def _get_seleniumwire_options(self) -> dict[str, dict[str, str | None] | bool]:
         proxy_options = self._get_socks5_proxy_config()
@@ -95,7 +107,7 @@ class GeckodriverFBWebDriverImpl(FBWebDriver):
         if is_random:
             return FakeUserAgentConfig.get_fake_ua_firefox()
         else:
-            pass
+            
 
     def _get_socks5_proxy_config(self) -> dict[str, dict[str, str | None]]:
         return ProxyConfig.get_socks5_proxy_config()
