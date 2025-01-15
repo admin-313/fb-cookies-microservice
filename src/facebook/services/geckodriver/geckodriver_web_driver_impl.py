@@ -65,12 +65,13 @@ class GeckodriverFBWebDriverImpl(FBWebDriver):
     def _get_cookies(self) -> dict[str, str]:
         if self._json_config:
             cookie_str: str = self._json_config["cookie"]
-            cookies_list: dict[str, str] = CookieStringParser.parse_cookie_string(cookie_str=cookie_str)
+            cookies_list: dict[str, str] = CookieStringParser.parse_cookie_string(
+                cookie_str=cookie_str
+            )
 
             return cookies_list
         else:
             return {}
-
 
     def _set_cookies_from_config(self) -> None:
         if not self._firefox_driver:
@@ -104,10 +105,11 @@ class GeckodriverFBWebDriverImpl(FBWebDriver):
         Returns:
             str: User agent
         """
-        if is_random:
-            return FakeUserAgentConfig.get_fake_ua_firefox()
+        if not is_random and self._json_config:
+            return self._json_config["user_agent"]
+        
         else:
-            
+            return FakeUserAgentConfig.get_fake_ua_firefox()
 
     def _get_socks5_proxy_config(self) -> dict[str, dict[str, str | None]]:
         return ProxyConfig.get_socks5_proxy_config()
