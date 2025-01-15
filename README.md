@@ -6,7 +6,7 @@
 Rename ```example.json``` to ```config.json```, open it and enter your data
 
 # TODO List:
-- [ ] Add Token and Cookie parsers
+- [x] Add Config parsers
 - [ ] Add robust Exception handling
 - [ ] Add logging
 - [ ] Write tests
