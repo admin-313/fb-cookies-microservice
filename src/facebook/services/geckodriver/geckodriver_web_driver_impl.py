@@ -44,6 +44,9 @@ class GeckodriverFBWebDriverImpl(FBWebDriver):
             "options": self._get_selenium_options(),
         }
 
+    def parse_token_from_html(self, html: str) -> str:
+        return super().parse_token_from_html(html)
+
     def _load_json_config(self) -> dict[str, str]:
         self._json_config = GetJSONConfig.get_json_config()
         return self._json_config
@@ -107,7 +110,7 @@ class GeckodriverFBWebDriverImpl(FBWebDriver):
         """
         if not is_random and self._json_config:
             return self._json_config["user_agent"]
-        
+
         else:
             return FakeUserAgentConfig.get_fake_ua_firefox()
 
