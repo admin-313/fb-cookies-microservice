@@ -9,7 +9,10 @@ Rename ```example.json``` to ```config.json```, open it and enter your data
 - [ ] Add Token and Cookie parsers
 - [ ] Add robust Exception handling
 - [ ] Add logging
-- [ ] Write some tests
+- [ ] Write tests
+  - [ ] Tests for config.py
+  - [ ] Tests for gecko-webdriver
+  - [ ] Tests for utils.py
 - [ ] Documentation
   - [ ] API endpoints
   - [ ] Configuration guide
