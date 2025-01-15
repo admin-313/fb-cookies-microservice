@@ -1,14 +1,17 @@
 import asyncio
 from seleniumwire import webdriver  # type: ignore
 from facebook.services.fb_web_driver import FBWebDriver
-from facebook.exceptions import FBWebdriverCouldNotParseToken
+from facebook.exceptions import (
+    FBWebdriverCouldNotParseToken,
+    FBWebdriverHasNotBeenInstanciatedException,
+)
 from facebook.config import FakeUserAgentConfig, ProxyConfig
 
 
 class GeckodriverFBWebDriverImpl(FBWebDriver):
     _firefox_driver: webdriver.Firefox | None = None
     _json_config: dict[str, str] | None = None
-    
+
     async def run_facebook_parser(self) -> str:
         parsed_result: list[str] | None = None
 
@@ -49,6 +52,21 @@ class GeckodriverFBWebDriverImpl(FBWebDriver):
         gecko_options.set_preference("network.security.ports.banned.override", "443")
 
         return gecko_options
+
+    def _get_cookies(self) -> dict[str, str]:
+        pass
+
+    def _set_cookies_from_config(self) -> None:
+        if not self._firefox_driver:
+            raise FBWebdriverHasNotBeenInstanciatedException(
+                "Can't set cookies for an unexistent driver"
+            )
+        else:
+            cookies: dict[str, str] = self._get_cookies()
+            for k, v in cookies:
+                # I ignore pylance here because selenium wire did not provide type hints to this method.
+                # It is supposed to only accept str values tho so method is not expected to fail here.
+                self._firefox_driver.add_cookie({"name": k, "value": v})  # type: ignore
 
     def _get_seleniumwire_options(self) -> dict[str, dict[str, str | None] | bool]:
         proxy_options = self._get_socks5_proxy_config()
