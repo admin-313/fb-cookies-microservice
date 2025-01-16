@@ -3,7 +3,7 @@ from seleniumwire import webdriver  # type: ignore
 from facebook.services.fb_web_driver import FBWebDriver
 from facebook.exceptions import (
     FBWebdriverCouldNotParseToken,
-    FBWebdriverHasNotBeenInstanciatedException,
+    FBWebdriverHasNotBeenInstanciated,
 )
 from facebook.config import FakeUserAgentConfig, GetJSONConfig, ProxyConfig
 from facebook.utils import CookieStringParser
@@ -79,7 +79,7 @@ class GeckodriverFBWebDriverImpl(FBWebDriver):
 
     def _set_cookies_from_config(self) -> None:
         if not self._firefox_driver:
-            raise FBWebdriverHasNotBeenInstanciatedException(
+            raise FBWebdriverHasNotBeenInstanciated(
                 "Can't set cookies for an unexistent driver"
             )
         else:
