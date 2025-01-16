@@ -100,7 +100,7 @@ class GeckodriverFBWebDriverImpl(FBWebDriver):
         else:
             cookies: dict[str, str] = self._get_cookies()
             if cookies:
-                for k, v in cookies:
+                for k, v in cookies.items():
                     # I ignore pylance here because selenium wire did not provide type hints to this method.
                     # It is supposed to only accept str values tho so method is not expected to fail here.
                     self._firefox_driver.add_cookie({"name": k, "value": v})  # type: ignore
