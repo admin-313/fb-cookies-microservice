@@ -1,23 +1,23 @@
 import asyncio
 from seleniumwire import webdriver  # type: ignore
 from facebook.services.fb_web_driver import FBWebDriver
+from facebook.config import FakeUserAgentConfig, GetJSONConfig, ProxyConfig
+from facebook.utils import CookieStringParser
+from facebook.schemas import JSONFBWebdriverConfig, ParserResponce
 from facebook.exceptions import (
     TokenParseException,
     FBWebdriverHasNotBeenInstanciated,
     Socks5ProxyParseFail,
 )
-from facebook.config import FakeUserAgentConfig, GetJSONConfig, ProxyConfig
-from facebook.utils import CookieStringParser
-from facebook.schemas import JSONFBWebdriverConfig
 
 
 class GeckodriverFBWebDriverImpl(FBWebDriver):
     _firefox_driver: webdriver.Firefox | None = None
     _json_config: JSONFBWebdriverConfig | None = None
+    _parsed_result: ParserResponce | None = None
 
-    async def run_facebook_parser(self) -> str:
+    async def run_facebook_parser(self) -> ParserResponce:
         parsed_result: list[str] | None = None
-
         try:
             self._load_json_config()
 
@@ -33,6 +33,7 @@ class GeckodriverFBWebDriverImpl(FBWebDriver):
         finally:
             if self._firefox_driver:
                 self._firefox_driver.quit()
+        
         if parsed_result:
             return parsed_result
         else:
