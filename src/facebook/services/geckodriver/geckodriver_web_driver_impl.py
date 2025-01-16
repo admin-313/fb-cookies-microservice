@@ -46,8 +46,8 @@ class GeckodriverFBWebDriverImpl(FBWebDriver):
             "options": self._get_selenium_options(),
         }
 
-    def parse_token_from_html(self, html: str) -> str:
-        return super().parse_token_from_html(html)
+    def get_accesstoken(self) -> str:
+        return super().get_accesstoken()
 
     def _load_json_config(self) -> JSONFBWebdriverConfig:
         self._json_config = GetJSONConfig.get_json_config()
