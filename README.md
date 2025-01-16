@@ -7,8 +7,8 @@ Rename ```example.json``` to ```config.json```, open it and enter your data
 
 # TODO List:
 - [x] Add Config parsers
-- [ ] Add robust Exception handling
-- [ ] Add logging
+- [x] Add robust Exception handling
+- [x] Add logging
 - [ ] Write tests
   - [x] Tests for config.py
   - [ ] Tests for gecko-webdriver
