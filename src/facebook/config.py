@@ -4,7 +4,7 @@ from fake_useragent import UserAgent
 from facebook.schemas import JSONFBWebdriverConfig
 
 
-JSON_CONFIG_PATH: str = "../config.json"
+JSON_CONFIG_PATH: str = "config.json"
 
 
 class ProxyConfig:
