@@ -29,9 +29,15 @@ class FakeUserAgentConfig:
 
 class GetJSONConfig:
     @staticmethod
-    def get_json_config() -> dict[str, str]:
+    def get_json_config(custom_path: str | None = None) -> dict[str, str]:
+        config_path: str
+        if custom_path:
+            config_path = custom_path
+        else:
+            config_path = JSON_CONFIG_PATH
+
         content: dict[Any, Any]
-        with open(JSON_CONFIG_PATH, "r") as json_file:
+        with open(config_path, "r") as json_file:
             content = json.load(json_file)
 
         try:
