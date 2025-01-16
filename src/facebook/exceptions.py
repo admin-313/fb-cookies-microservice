@@ -1,14 +1,26 @@
 class FBWebdriverException(Exception):
     pass
 
+
+class ConfigException(Exception):
+    pass
+
+
 class FBWebdriverCouldNotLoginToFb(FBWebdriverException):
     pass
+
 
 class FBWebdriverHasNotBeenInstanciated(FBWebdriverException):
     pass
 
-class FBWebdriverCouldNotParseToken(FBWebdriverException):
+
+class FBWebdriverInvalidConfigProvided(ConfigException):
     pass
 
-class FBWebdriverInvalidConfigProvided(FBWebdriverException):
+
+class TockenParseException(ConfigException):
+    pass
+
+
+class Socks5ProxyParseFail(ConfigException):
     pass
