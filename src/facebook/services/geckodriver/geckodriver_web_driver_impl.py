@@ -17,7 +17,7 @@ class GeckodriverFBWebDriverImpl(FBWebDriver):
     _json_config: JSONFBWebdriverConfig
 
     async def run_facebook_parser(self) -> ParserResponce:
-        parsed_result: list[str] | None = None
+        parsed_result: dict[str, str] | None = None
         try:
             self._load_json_config()
 
@@ -49,10 +49,19 @@ class GeckodriverFBWebDriverImpl(FBWebDriver):
         }
 
     def get_accesstoken(self) -> str:
-        return super().get_accesstoken()
+        if self._firefox_driver:
+            return self._firefox_driver.execute_script(script="console.log(window.__accessToken)") # type: ignore
+        
+        else:
+            raise FBWebdriverHasNotBeenInstanciated("Can't parse access token via an unexistent driver")
 
     def get_cookie(self) -> str:
-        return super().get_cookie()
+        if self._firefox_driver:
+            # Only for JS guru 
+            self._firefox_driver.execute_script(script="const result = cookies.map(obj => `${obj.name}=${obj.value}`).join(';');") # type: ignore
+            return self._firefox_driver.execute_script(script="console.log(result + ';')") # type: ignore
+        else:
+            raise FBWebdriverHasNotBeenInstanciated("Can't parse access token via an unexistent driver")
 
     def _load_json_config(self) -> JSONFBWebdriverConfig:
         self._json_config = GetJSONConfig.get_json_config()
