@@ -29,7 +29,7 @@ class FakeUserAgentConfig:
 
 class GetJSONConfig:
     @staticmethod
-    def get_json_config(custom_path: str | None = None) -> dict[str, str]:
+    def get_json_config(custom_path: str | None = None) -> JSONFBWebdriverConfig:
         config_path: str
         if custom_path:
             config_path = custom_path
@@ -41,7 +41,6 @@ class GetJSONConfig:
             content = json.load(json_file)
 
         try:
-            JSONFBWebdriverConfig.model_validate(content)
-            return content
+            return JSONFBWebdriverConfig.model_validate(content)
         except ValidationError as v_e:
             raise FBWebdriverInvalidConfigProvided(v_e)

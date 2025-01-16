@@ -7,11 +7,12 @@ from facebook.exceptions import (
 )
 from facebook.config import FakeUserAgentConfig, GetJSONConfig, ProxyConfig
 from facebook.utils import CookieStringParser
+from facebook.schemas import JSONFBWebdriverConfig
 
 
 class GeckodriverFBWebDriverImpl(FBWebDriver):
     _firefox_driver: webdriver.Firefox | None = None
-    _json_config: dict[str, str] | None = None
+    _json_config: JSONFBWebdriverConfig | None = None
 
     async def run_facebook_parser(self) -> str:
         parsed_result: list[str] | None = None
@@ -47,7 +48,7 @@ class GeckodriverFBWebDriverImpl(FBWebDriver):
     def parse_token_from_html(self, html: str) -> str:
         return super().parse_token_from_html(html)
 
-    def _load_json_config(self) -> dict[str, str]:
+    def _load_json_config(self) -> JSONFBWebdriverConfig:
         self._json_config = GetJSONConfig.get_json_config()
         return self._json_config
 
@@ -67,7 +68,7 @@ class GeckodriverFBWebDriverImpl(FBWebDriver):
 
     def _get_cookies(self) -> dict[str, str]:
         if self._json_config:
-            cookie_str: str = self._json_config["cookie"]
+            cookie_str: str = self._json_config.cookie
             cookies_list: dict[str, str] = CookieStringParser.parse_cookie_string(
                 cookie_str=cookie_str
             )
@@ -109,10 +110,13 @@ class GeckodriverFBWebDriverImpl(FBWebDriver):
             str: User agent
         """
         if not is_random and self._json_config:
-            return self._json_config["user_agent"]
+            return self._json_config.user_agent
 
         else:
             return FakeUserAgentConfig.get_fake_ua_firefox()
 
     def _get_socks5_proxy_config(self) -> dict[str, dict[str, str | None]]:
-        return ProxyConfig.get_proxy_config()
+        if self._json_config:
+            return ProxyConfig.get_proxy_config(proxy_url=self._json_config.cookie)
+        else:
+            raise ValueError("No proxy config was provided")
