@@ -132,7 +132,7 @@ class GeckodriverFBWebDriverImpl(FBWebDriver):
 
     def _get_socks5_proxy_config(self) -> dict[str, dict[str, str | None]]:
         if self._json_config:
-            return ProxyConfig.get_proxy_config(proxy_url=self._json_config.cookie)
+            return ProxyConfig.get_proxy_config(proxy_url=self._json_config.proxy)
         
         else:
             raise Socks5ProxyParseFail("No proxy config was provided")
