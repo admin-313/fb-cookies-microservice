@@ -14,5 +14,5 @@ logging.info("The routers have been attached")
 # This two lines of code were made for debug to work properly with FastAPI
 # docs: https://fastapi.tiangolo.com/tutorial/debugging/
 if __name__ == "__main__":
-    logging.debug("Uvcorn runs in DEBUG mode!")
+    logging.debug("Uvicorn runs in DEBUG mode!")
     uvicorn.run(app, host="0.0.0.0", port=8000)
