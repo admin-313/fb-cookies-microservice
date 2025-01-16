@@ -13,6 +13,7 @@ Rename ```example.json``` to ```config.json```, open it and enter your data
 - [x] Add Config parsers
 - [x] Add robust Exception handling
 - [x] Add logging
+- [ ] Add Docker Support
 - [ ] Write tests
   - [x] Tests for config.py
   - [ ] Tests for gecko-webdriver
