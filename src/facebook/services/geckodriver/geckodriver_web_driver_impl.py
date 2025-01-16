@@ -4,6 +4,7 @@ from facebook.services.fb_web_driver import FBWebDriver
 from facebook.exceptions import (
     TockenParseException,
     FBWebdriverHasNotBeenInstanciated,
+    Socks5ProxyParseFail,
 )
 from facebook.config import FakeUserAgentConfig, GetJSONConfig, ProxyConfig
 from facebook.utils import CookieStringParser
@@ -118,5 +119,6 @@ class GeckodriverFBWebDriverImpl(FBWebDriver):
     def _get_socks5_proxy_config(self) -> dict[str, dict[str, str | None]]:
         if self._json_config:
             return ProxyConfig.get_proxy_config(proxy_url=self._json_config.cookie)
+        
         else:
-            raise ValueError("No proxy config was provided")
+            raise Socks5ProxyParseFail("No proxy config was provided")
