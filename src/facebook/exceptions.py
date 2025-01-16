@@ -18,7 +18,7 @@ class FBWebdriverInvalidConfigProvided(ConfigException):
     pass
 
 
-class TockenParseException(ConfigException):
+class TokenParseException(ConfigException):
     pass
 
 

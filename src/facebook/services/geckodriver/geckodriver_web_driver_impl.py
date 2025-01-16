@@ -2,7 +2,7 @@ import asyncio
 from seleniumwire import webdriver  # type: ignore
 from facebook.services.fb_web_driver import FBWebDriver
 from facebook.exceptions import (
-    TockenParseException,
+    TokenParseException,
     FBWebdriverHasNotBeenInstanciated,
     Socks5ProxyParseFail,
 )
@@ -36,7 +36,7 @@ class GeckodriverFBWebDriverImpl(FBWebDriver):
         if parsed_result:
             return parsed_result
         else:
-            raise TockenParseException("Could not parse the token!")
+            raise TokenParseException("Could not parse the token!")
 
     def get_webdriver_options(
         self,
