@@ -13,8 +13,8 @@ from facebook.exceptions import (
 
 class GeckodriverFBWebDriverImpl(FBWebDriver):
     _firefox_driver: webdriver.Firefox | None = None
-    _json_config: JSONFBWebdriverConfig | None = None
     _parsed_result: ParserResponce | None = None
+    _json_config: JSONFBWebdriverConfig
 
     async def run_facebook_parser(self) -> ParserResponce:
         parsed_result: list[str] | None = None
@@ -24,9 +24,10 @@ class GeckodriverFBWebDriverImpl(FBWebDriver):
             options: dict[
                 str, webdriver.FirefoxOptions | dict[str, dict[str, str | None] | bool]
             ] = self.get_webdriver_options()
+            # Connects to proxy and sets ua
             self._firefox_driver = webdriver.Firefox(**options)
 
-            self._firefox_driver.get("https://api.ipify.org?format=json")
+            self._firefox_driver.get(self._json_config.adsmanager_link)
             self._set_cookies_from_config()
             await asyncio.sleep(6)
 
