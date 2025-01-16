@@ -1,9 +1,8 @@
 import json
 from typing import Any
 from fake_useragent import UserAgent
-from pydantic import ValidationError
 from facebook.schemas import JSONFBWebdriverConfig
-from facebook.exceptions import FBWebdriverInvalidConfigProvided
+
 
 JSON_CONFIG_PATH: str = "../config.json"
 
@@ -40,7 +39,4 @@ class GetJSONConfig:
         with open(config_path, "r") as json_file:
             content = json.load(json_file)
 
-        try:
-            return JSONFBWebdriverConfig.model_validate(content)
-        except ValidationError as v_e:
-            raise FBWebdriverInvalidConfigProvided(v_e)
+        return JSONFBWebdriverConfig.model_validate(content)
