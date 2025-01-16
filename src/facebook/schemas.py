@@ -14,3 +14,9 @@ class JSONFBWebdriverConfig(BaseModel):
     proxy: str
     user_agent: str
     cookie: str
+
+class ParseResponce(BaseModel):
+    model_config = ConfigDict(strict=True)
+
+    cookie: str
+    access_token: str
