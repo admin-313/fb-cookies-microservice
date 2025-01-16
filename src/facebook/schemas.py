@@ -1,13 +1,5 @@
 from pydantic import BaseModel, ConfigDict
 
-
-class FacebookToken(BaseModel):
-    model_config = ConfigDict(strict=True)
-
-    token: str
-    cookie: str
-
-
 class JSONFBWebdriverConfig(BaseModel):
     model_config = ConfigDict(strict=True)
 
@@ -15,7 +7,7 @@ class JSONFBWebdriverConfig(BaseModel):
     user_agent: str
     cookie: str
 
-class ParseResponce(BaseModel):
+class ParserResponce(BaseModel):
     model_config = ConfigDict(strict=True)
 
     cookie: str
