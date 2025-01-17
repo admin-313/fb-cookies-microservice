@@ -1,0 +1,7 @@
+// RENAME THIS FILE TO config.json AND REMOVE THIS COMMENT
+{
+    "proxy": "urlToYourProxy",
+    "user_agent": "preferedUserAgent",
+    "cookie": "yourFacebookCookie",
+    "adsmanager_link": "linkToYourAdsmanagerPage"
+}
