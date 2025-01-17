@@ -1,15 +1,16 @@
 import asyncio
+import re
+from pydantic import ValidationError
 from seleniumwire import webdriver  # type: ignore
 from facebook.services.fb_web_driver import FBWebDriver
 from facebook.config import FakeUserAgentConfig, GetJSONConfig, ProxyConfig
 from facebook.utils import CookieStringParser
 from facebook.schemas import JSONFBWebdriverConfig, ParserResponce
 from facebook.exceptions import (
-    TokenParseException,
     FBWebdriverHasNotBeenInstanciated,
     Socks5ProxyParseFail,
+    FBDriverJSParseException,
 )
-
 
 class GeckodriverFBWebDriverImpl(FBWebDriver):
     _firefox_driver: webdriver.Firefox | None = None
@@ -17,28 +18,32 @@ class GeckodriverFBWebDriverImpl(FBWebDriver):
     _json_config: JSONFBWebdriverConfig
 
     async def run_facebook_parser(self) -> ParserResponce:
-        parsed_result: dict[str, str] | None = None
         try:
+            result: dict[str, str] = {}
             self._load_json_config()
-
             options: dict[
                 str, webdriver.FirefoxOptions | dict[str, dict[str, str | None] | bool]
             ] = self.get_webdriver_options()
             # Connects to proxy and sets ua
             self._firefox_driver = webdriver.Firefox(**options)
-
-            self._firefox_driver.get(self._json_config.adsmanager_link)
+            self._firefox_driver.get("https://facebook.com")
             self._set_cookies_from_config()
-            await asyncio.sleep(6)
+            self._firefox_driver.get(self._json_config.adsmanager_link)
+            html: str = self._firefox_driver.page_source
+            result["access_token"] = self.get_accesstoken(html)
+            result["cookie"] = self.get_cookie()
+
+            return ParserResponce.model_validate(result)
+
+        except ValidationError as ve:
+            raise FBDriverJSParseException(
+                f"Could not validate obtained data via JS parsing {str(ve)}"
+            )
 
         finally:
             if self._firefox_driver:
+                await asyncio.sleep(2)
                 self._firefox_driver.quit()
-        
-        if parsed_result:
-            return parsed_result
-        else:
-            raise TokenParseException("Could not parse the token!")
 
     def get_webdriver_options(
         self,
@@ -48,20 +53,54 @@ class GeckodriverFBWebDriverImpl(FBWebDriver):
             "options": self._get_selenium_options(),
         }
 
-    def get_accesstoken(self) -> str:
-        if self._firefox_driver:
-            return self._firefox_driver.execute_script(script="console.log(window.__accessToken)") # type: ignore
+    def get_accesstoken(self, page_source: str) -> str:
+        if not self._firefox_driver:
+            raise FBWebdriverHasNotBeenInstanciated("Driver not initialized")
         
-        else:
-            raise FBWebdriverHasNotBeenInstanciated("Can't parse access token via an unexistent driver")
+        regexp_pattern = r'window\.__accessToken="([^"]+)"'
+        match = re.search(regexp_pattern, page_source)
+        
+        if not match:
+            raise FBDriverJSParseException("Access token not found in page source")
+            
+        return match.group(1)
 
     def get_cookie(self) -> str:
         if self._firefox_driver:
-            # Only for JS guru 
-            self._firefox_driver.execute_script(script="const result = cookies.map(obj => `${obj.name}=${obj.value}`).join(';');") # type: ignore
-            return self._firefox_driver.execute_script(script="console.log(result + ';')") # type: ignore
+            # Only for JS guru
+            # self._firefox_driver.execute_async_script( # type: ignore
+            #     script="""
+            # let cookieObj = document.cookie
+            #     .split(';')
+            #     .map(cookie => cookie.trim())
+            #     .reduce((acc, curr) => {
+            #         const [key, value] = curr.split('=');
+            #         acc[key] = value;
+            #         return acc;
+            #     }, {});
+            # """  
+            # )
+
+            return self._firefox_driver.execute_script( # type: ignore
+                script="""
+                let cookieObj = document.cookie
+                .split(';')
+                .map(cookie => cookie.trim())
+                .reduce((acc, curr) => {
+                    const [key, value] = curr.split('=');
+                    acc[key] = value;
+                    return acc;
+                }, {});
+                Object.entries(cookieObj)
+                .map(([key, value]) => `${key}=${value}`)
+                .join(';');"""
+            )
+            # self._firefox_driver.execute_script(script="const result = cookies.map(obj => `${obj.name}=${obj.value}`).join(';');")  # type: ignore
+            # return self._firefox_driver.execute_script(script="console.log(result + ';')")  # type: ignore
         else:
-            raise FBWebdriverHasNotBeenInstanciated("Can't parse access token via an unexistent driver")
+            raise FBWebdriverHasNotBeenInstanciated(
+                "Can't parse access token via an unexistent driver"
+            )
 
     def _load_json_config(self) -> JSONFBWebdriverConfig:
         self._json_config = GetJSONConfig.get_json_config()
@@ -74,11 +113,15 @@ class GeckodriverFBWebDriverImpl(FBWebDriver):
         gecko_options.set_preference(
             name="general.useragent.override", value=user_agent
         )
+
         gecko_options.accept_insecure_certs = True
+        gecko_options.page_load_strategy = "eager"
         gecko_options.set_preference("security.tls.version.min", 1)
         gecko_options.set_preference("security.tls.version.max", 4)
         gecko_options.set_preference("network.security.ports.banned.override", "443")
-
+        # gecko_options.set_preference("javascript.enabled", False)
+        gecko_options.set_preference("network.http.referer.defaultPolicy", 2)
+    
         return gecko_options
 
     def _get_cookies(self) -> dict[str, str]:
@@ -103,13 +146,13 @@ class GeckodriverFBWebDriverImpl(FBWebDriver):
                 for k, v in cookies.items():
                     # I ignore pylance here because selenium wire did not provide type hints to this method.
                     # It is supposed to only accept str values tho so method is not expected to fail here.
-                    self._firefox_driver.add_cookie({"name": k, "value": v})  # type: ignore
+                    self._firefox_driver.add_cookie({"name": k, "value": v, "domain": ".facebook.com", "secure": True, "path": "/"})  # type: ignore
 
     def _get_seleniumwire_options(self) -> dict[str, dict[str, str | None] | bool]:
         proxy_options = self._get_socks5_proxy_config()
         ssl_options = {
-            "verify_ssl": False,
-            "suppress_connection_errors": True,
+            # "verify_ssl": False,
+            # "suppress_connection_errors": True,
             "accept_untrusted_certs ": True,
         }
 
@@ -133,6 +176,6 @@ class GeckodriverFBWebDriverImpl(FBWebDriver):
     def _get_socks5_proxy_config(self) -> dict[str, dict[str, str | None]]:
         if self._json_config:
             return ProxyConfig.get_proxy_config(proxy_url=self._json_config.proxy)
-        
+
         else:
             raise Socks5ProxyParseFail("No proxy config was provided")

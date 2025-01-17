@@ -8,7 +8,7 @@ class FBWebDriver(ABC):
         pass
 
     @abstractmethod
-    def get_accesstoken(self) -> str:
+    def get_accesstoken(self, page_source: str) -> str:
         pass
     
     @abstractmethod
