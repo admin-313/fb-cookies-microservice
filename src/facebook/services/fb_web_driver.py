@@ -12,7 +12,7 @@ class FBWebDriver(ABC):
         pass
     
     @abstractmethod
-    def get_cookie(self) -> str:
+    def get_cookie(self, cookies: list[dict[str, str]]) -> str:
         pass
 
     @abstractmethod

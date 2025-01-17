@@ -28,10 +28,13 @@ class GeckodriverFBWebDriverImpl(FBWebDriver):
             self._firefox_driver = webdriver.Firefox(**options)
             self._firefox_driver.get("https://facebook.com")
             self._set_cookies_from_config()
+
             self._firefox_driver.get(self._json_config.adsmanager_link)
             html: str = self._firefox_driver.page_source
+            cookies: list[dict[str, str]] = self._firefox_driver.get_cookies() # type: ignore
+            
             result["access_token"] = self.get_accesstoken(html)
-            result["cookie"] = self.get_cookie()
+            result["cookie"] = self.get_cookie(cookies)
 
             return ParserResponce.model_validate(result)
 
@@ -65,38 +68,10 @@ class GeckodriverFBWebDriverImpl(FBWebDriver):
             
         return match.group(1)
 
-    def get_cookie(self) -> str:
+    def get_cookie(self, cookies: list[dict[str, str]]) -> str:
         if self._firefox_driver:
-            # Only for JS guru
-            # self._firefox_driver.execute_async_script( # type: ignore
-            #     script="""
-            # let cookieObj = document.cookie
-            #     .split(';')
-            #     .map(cookie => cookie.trim())
-            #     .reduce((acc, curr) => {
-            #         const [key, value] = curr.split('=');
-            #         acc[key] = value;
-            #         return acc;
-            #     }, {});
-            # """  
-            # )
 
-            return self._firefox_driver.execute_script( # type: ignore
-                script="""
-                let cookieObj = document.cookie
-                .split(';')
-                .map(cookie => cookie.trim())
-                .reduce((acc, curr) => {
-                    const [key, value] = curr.split('=');
-                    acc[key] = value;
-                    return acc;
-                }, {});
-                Object.entries(cookieObj)
-                .map(([key, value]) => `${key}=${value}`)
-                .join(';');"""
-            )
-            # self._firefox_driver.execute_script(script="const result = cookies.map(obj => `${obj.name}=${obj.value}`).join(';');")  # type: ignore
-            # return self._firefox_driver.execute_script(script="console.log(result + ';')")  # type: ignore
+            return ";".join([f"{cookie['name']}={cookie['value']}" for cookie in cookies])
         else:
             raise FBWebdriverHasNotBeenInstanciated(
                 "Can't parse access token via an unexistent driver"
@@ -119,7 +94,6 @@ class GeckodriverFBWebDriverImpl(FBWebDriver):
         gecko_options.set_preference("security.tls.version.min", 1)
         gecko_options.set_preference("security.tls.version.max", 4)
         gecko_options.set_preference("network.security.ports.banned.override", "443")
-        # gecko_options.set_preference("javascript.enabled", False)
         gecko_options.set_preference("network.http.referer.defaultPolicy", 2)
     
         return gecko_options
@@ -151,8 +125,6 @@ class GeckodriverFBWebDriverImpl(FBWebDriver):
     def _get_seleniumwire_options(self) -> dict[str, dict[str, str | None] | bool]:
         proxy_options = self._get_socks5_proxy_config()
         ssl_options = {
-            # "verify_ssl": False,
-            # "suppress_connection_errors": True,
             "accept_untrusted_certs ": True,
         }
 
