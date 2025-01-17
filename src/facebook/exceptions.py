@@ -24,3 +24,6 @@ class TokenParseException(ConfigException):
 
 class Socks5ProxyParseFail(ConfigException):
     pass
+
+class FBDriverJSParseException(FBWebdriverException):
+    pass
